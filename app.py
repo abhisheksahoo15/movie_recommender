@@ -3,7 +3,7 @@ import requests
 import streamlit as st
 
 # Google Drive File URL
-drive_file_url = "https://drive.google.com/uc?id=1hgLYVg5WcCz2Fr4JrGguQ2VIqwS4dTX8"
+drive_file_url = "https://drive.google.com/file/d/1hgLYVg5WcCz2Fr4JrGguQ2VIqwS4dTX8/"
 
 try:
     # Fetch the file from Google Drive
