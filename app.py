@@ -1,5 +1,5 @@
-import requests
 import pickle
+import requests
 import streamlit as st
 
 # Google Drive File URL
@@ -9,23 +9,31 @@ try:
     # Fetch the file from Google Drive
     response = requests.get(drive_file_url)
     response.raise_for_status()  # Raise an error for HTTP issues
-    similarity = pickle.loads(response.content)  # Load pickle content
+    
+    # Validate content type
+    if "text/html" in response.headers["Content-Type"]:
+        raise ValueError("Google Drive returned an HTML page instead of the pickle file. Check the file's permissions.")
+    
+    # Load pickle content
+    similarity = pickle.loads(response.content)
 except requests.exceptions.RequestException as e:
-    st.error(f"Failed to fetch similarity.pkl from Google Drive. Error: {e}")
+    st.error(f"Failed to fetch similarity.pkl from Google Drive. Network Error: {e}")
+    similarity = None
+except ValueError as e:
+    st.error(f"Validation Error: {e}")
     similarity = None
 except pickle.UnpicklingError as e:
-    st.error(f"Failed to load pickle file. Error: {e}")
+    st.error(f"Failed to load pickle file. Unpickling Error: {e}")
     similarity = None
 
-# Rest of the application
+# Streamlit App
 st.header('Movie Recommender System')
 
-# Ensure similarity.pkl was loaded successfully
 if similarity:
-    # Load other necessary data
+    # Load movie data
     movies = pickle.load(open('movie_list.pkl', 'rb'))
 
-    # UI and recommendation logic
+    # Movie selection
     movie_list = movies['title'].values
     selected_movie = st.selectbox(
         "Type or select a movie from the dropdown",
